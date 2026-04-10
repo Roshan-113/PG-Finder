@@ -15,7 +15,9 @@ public class ContactServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/views/public/contact.jsp").forward(request, response);
+        request.setAttribute("pageTitle", "Contact Us");
+        request.setAttribute("contentPage", "/WEB-INF/views/public/contact.jsp");
+        request.getRequestDispatcher("/WEB-INF/views/layouts/main-layout.jsp").forward(request, response);
     }
 
     @Override
@@ -29,7 +31,9 @@ public class ContactServlet extends HttpServlet {
         if (name == null || email == null || message == null ||
             name.trim().isEmpty() || email.trim().isEmpty() || message.trim().isEmpty()) {
             request.setAttribute("error", "Please fill all required fields.");
-            request.getRequestDispatcher("/WEB-INF/views/public/contact.jsp").forward(request, response);
+            request.setAttribute("pageTitle", "Contact Us");
+            request.setAttribute("contentPage", "/WEB-INF/views/public/contact.jsp");
+            request.getRequestDispatcher("/WEB-INF/views/layouts/main-layout.jsp").forward(request, response);
             return;
         }
 
@@ -50,6 +54,8 @@ public class ContactServlet extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("success", "Thank you for contacting us!");
         }
-        request.getRequestDispatcher("/WEB-INF/views/public/contact.jsp").forward(request, response);
+        request.setAttribute("pageTitle", "Contact Us");
+        request.setAttribute("contentPage", "/WEB-INF/views/public/contact.jsp");
+        request.getRequestDispatcher("/WEB-INF/views/layouts/main-layout.jsp").forward(request, response);
     }
 }

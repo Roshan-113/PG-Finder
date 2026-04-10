@@ -92,7 +92,12 @@ public class NotificationsServlet extends HttpServlet {
                 notification.put("createdAt", rs.getTimestamp("created_at"));
                 notifications.add(notification);
             }
-    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return notifications;
+    }
+
     private boolean markAsRead(int notificationId, int userId) {
         String sql = "UPDATE notifications SET is_read = TRUE WHERE notification_id = ? AND user_id = ?";
         
