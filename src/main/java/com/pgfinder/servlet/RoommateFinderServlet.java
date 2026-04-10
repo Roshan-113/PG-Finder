@@ -120,9 +120,11 @@ public class RoommateFinderServlet extends HttpServlet {
         StringBuilder sql = new StringBuilder(
             "SELECT rp.profile_id, rp.user_id, rp.age, rp.gender, rp.occupation, " +
             "rp.preferred_location, rp.budget_min, rp.budget_max, rp.move_in_date, " +
-            "rp.bio, rp.created_at, u.name, u.profile_image, u.is_verified " +
+            "rp.bio, rp.room_number, rp.created_at, u.name, u.profile_image, u.is_verified, " +
+            "COALESCE(l.title, '') as pg_name, COALESCE(l.city, rp.preferred_location, '') as city " +
             "FROM roommate_profiles rp " +
             "JOIN users u ON rp.user_id = u.user_id " +
+            "LEFT JOIN pg_listings l ON rp.pg_listing_id = l.listing_id " +
             "WHERE rp.is_active = 1 AND u.is_active = 1 "
         );
 
@@ -162,6 +164,9 @@ public class RoommateFinderServlet extends HttpServlet {
                 m.put("budgetMax", rs.getBigDecimal("budget_max"));
                 m.put("bio", rs.getString("bio"));
                 m.put("moveInDate", rs.getDate("move_in_date"));
+                m.put("pgName", rs.getString("pg_name"));
+                m.put("city", rs.getString("city"));
+                m.put("roomNumber", rs.getString("room_number"));
                 list.add(m);
             }
         } catch (SQLException e) {

@@ -69,6 +69,8 @@ public class VerifyRazorpayPaymentServlet extends HttpServlet {
                 );
                 
                 if (updated) {
+                    // Auto-populate roommate profile from confirmed booking
+                    bookingDAO.upsertRoommateProfileFromBooking(bookingId);
                     response.getWriter().write(gson.toJson(Map.of(
                         "success", true,
                         "message", "Payment verified successfully",

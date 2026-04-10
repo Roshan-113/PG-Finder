@@ -1,5 +1,6 @@
 package com.pgfinder.servlet.owner;
 
+import com.pgfinder.dao.BookingDAO;
 import com.pgfinder.dao.OwnerDAO;
 import com.pgfinder.model.Booking;
 import com.google.gson.Gson;
@@ -17,11 +18,13 @@ import java.util.Map;
 @WebServlet("/owner/bookings")
 public class OwnerBookingsServlet extends HttpServlet {
     private OwnerDAO ownerDAO;
+    private BookingDAO bookingDAO;
     private Gson gson;
     
     @Override
     public void init() {
         ownerDAO = new OwnerDAO();
+        bookingDAO = new BookingDAO();
         gson = new Gson();
     }
     
@@ -65,6 +68,10 @@ public class OwnerBookingsServlet extends HttpServlet {
             
             if ("accept".equals(action)) {
                 success = ownerDAO.updateBookingStatus(bookingId, ownerId, "confirmed");
+                if (success) {
+                    // Auto-populate roommate profile from confirmed booking
+                    bookingDAO.upsertRoommateProfileFromBooking(bookingId);
+                }
             } else if ("reject".equals(action)) {
                 success = ownerDAO.updateBookingStatus(bookingId, ownerId, "rejected");
             }

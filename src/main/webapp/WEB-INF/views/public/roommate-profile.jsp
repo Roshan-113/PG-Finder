@@ -53,7 +53,11 @@
                     </div>
                     <div style="display:flex;align-items:center;gap:0.5rem;color:#6b7280;font-size:0.875rem;">
                         <i class="fas fa-home" style="color:#2563eb;width:14px;"></i>
-                        <span><strong>PG:</strong> ${profile.pgName}</span>
+                        <span><strong>PG:</strong> ${profile.pgName}
+                            <c:if test="${not empty profile.roomNumber}">
+                                &nbsp;&bull;&nbsp;<strong>Room:</strong> ${profile.roomNumber}
+                            </c:if>
+                        </span>
                     </div>
                 </div>
 

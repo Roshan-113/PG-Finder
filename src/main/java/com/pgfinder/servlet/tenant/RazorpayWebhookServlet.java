@@ -130,6 +130,8 @@ public class RazorpayWebhookServlet extends HttpServlet {
                 
                 // Update booking status
                 bookingDAO.updatePaymentStatus(bookingId, "paid", "confirmed");
+                // Auto-populate roommate profile from confirmed booking
+                bookingDAO.upsertRoommateProfileFromBooking(bookingId);
                 System.out.println("Payment captured for booking: " + bookingId);
             }
         } catch (Exception e) {

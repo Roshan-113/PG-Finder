@@ -193,6 +193,59 @@ public class BookingDAO {
         return false;
     }
     
+    // Auto-create/update roommate profile when booking is confirmed
+    public void upsertRoommateProfileFromBooking(int bookingId) {
+        String fetchSql = "SELECT b.tenant_id, b.listing_id, b.room_number, b.move_in_date, " +
+                          "l.city, l.title as pg_name, u.name, u.profile_image " +
+                          "FROM bookings b " +
+                          "JOIN pg_listings l ON b.listing_id = l.listing_id " +
+                          "JOIN users u ON b.tenant_id = u.user_id " +
+                          "WHERE b.booking_id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(fetchSql)) {
+            ps.setInt(1, bookingId);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) return;
+
+            int tenantId    = rs.getInt("tenant_id");
+            int listingId   = rs.getInt("listing_id");
+            String roomNo   = rs.getString("room_number");
+            java.sql.Date moveIn = rs.getDate("move_in_date");
+
+            // Check if profile already exists
+            boolean exists = false;
+            try (PreparedStatement chk = conn.prepareStatement(
+                    "SELECT profile_id FROM roommate_profiles WHERE user_id = ?")) {
+                chk.setInt(1, tenantId);
+                exists = chk.executeQuery().next();
+            }
+
+            if (exists) {
+                String upd = "UPDATE roommate_profiles SET pg_listing_id=?, room_number=?, " +
+                             "move_in_date=?, is_active=1, updated_at=NOW() WHERE user_id=?";
+                try (PreparedStatement upstmt = conn.prepareStatement(upd)) {
+                    upstmt.setInt(1, listingId);
+                    if (roomNo != null) upstmt.setString(2, roomNo); else upstmt.setNull(2, java.sql.Types.VARCHAR);
+                    if (moveIn != null) upstmt.setDate(3, moveIn); else upstmt.setNull(3, java.sql.Types.DATE);
+                    upstmt.setInt(4, tenantId);
+                    upstmt.executeUpdate();
+                }
+            } else {
+                String ins = "INSERT INTO roommate_profiles (user_id, pg_listing_id, room_number, move_in_date, is_active) " +
+                             "VALUES (?, ?, ?, ?, 1)";
+                try (PreparedStatement instmt = conn.prepareStatement(ins)) {
+                    instmt.setInt(1, tenantId);
+                    instmt.setInt(2, listingId);
+                    if (roomNo != null) instmt.setString(3, roomNo); else instmt.setNull(3, java.sql.Types.VARCHAR);
+                    if (moveIn != null) instmt.setDate(4, moveIn); else instmt.setNull(4, java.sql.Types.DATE);
+                    instmt.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private Booking extractBookingFromResultSet(ResultSet rs) throws SQLException {
         Booking booking = new Booking();
         booking.setBookingId(rs.getInt("booking_id"));

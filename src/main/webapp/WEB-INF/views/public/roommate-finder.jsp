@@ -128,7 +128,17 @@
                                 <!-- PG Info -->
                                 <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;background:#f0f9ff;padding:0.625rem 0.75rem;border-radius:0.5rem;">
                                     <i class="fas fa-home" style="color:#0369a1;"></i>
-                                    <span style="color:#0369a1;font-size:0.875rem;font-weight:600;">${rm.pgName}</span>
+                                    <span style="color:#0369a1;font-size:0.875rem;font-weight:600;">
+                                        <c:choose>
+                                            <c:when test="${not empty rm.pgName}">${rm.pgName}</c:when>
+                                            <c:otherwise>Looking for PG</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                    <c:if test="${not empty rm.roomNumber}">
+                                        <span style="margin-left:auto;background:#dbeafe;color:#1e40af;padding:0.125rem 0.5rem;border-radius:9999px;font-size:0.75rem;font-weight:600;">
+                                            Room ${rm.roomNumber}
+                                        </span>
+                                    </c:if>
                                 </div>
 
                                 <!-- Action Buttons -->

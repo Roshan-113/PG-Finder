@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 10, 2026 at 06:23 AM
+-- Generation Time: Apr 10, 2026 at 06:56 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -578,6 +578,8 @@ INSERT INTO `reviews` (`review_id`, `listing_id`, `tenant_id`, `booking_id`, `ra
 CREATE TABLE `roommate_profiles` (
   `profile_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `pg_listing_id` int(11) DEFAULT NULL,
+  `room_number` varchar(20) DEFAULT NULL,
   `age` int(11) DEFAULT NULL,
   `gender` enum('male','female','other') DEFAULT NULL,
   `occupation` varchar(100) DEFAULT NULL,
@@ -596,8 +598,12 @@ CREATE TABLE `roommate_profiles` (
 -- Dumping data for table `roommate_profiles`
 --
 
-INSERT INTO `roommate_profiles` (`profile_id`, `user_id`, `age`, `gender`, `occupation`, `preferred_location`, `budget_min`, `budget_max`, `move_in_date`, `bio`, `preferences`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 3, 24, 'male', 'Software Engineer', 'Koramangala, Bangalore', 8000.00, 15000.00, NULL, 'Looking for clean PG near tech parks.', NULL, 1, '2026-04-10 04:22:49', '2026-04-10 04:22:49');
+INSERT INTO `roommate_profiles` (`profile_id`, `user_id`, `pg_listing_id`, `room_number`, `age`, `gender`, `occupation`, `preferred_location`, `budget_min`, `budget_max`, `move_in_date`, `bio`, `preferences`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 3, NULL, NULL, 24, 'male', 'Software Engineer', 'Koramangala, Bangalore', 8000.00, 15000.00, NULL, 'Looking for clean PG near tech parks.', NULL, 1, '2026-04-10 04:22:49', '2026-04-10 04:22:49'),
+(2, 3, 1, 'R101', 24, 'male', 'Software Engineer', 'Koramangala, Bangalore', 8000.00, 15000.00, '2026-05-01', 'Looking for clean PG near tech parks.', '{\"smoking\":\"no\",\"pets\":\"no\",\"food\":\"veg\"}', 1, '2026-04-10 04:55:57', '2026-04-10 04:55:57'),
+(3, 88, 2, 'R202', 22, 'female', 'Student', 'HSR Layout, Bangalore', 6000.00, 10000.00, '2026-05-15', 'Quiet and studious. Looking for girls PG.', '{\"smoking\":\"no\",\"pets\":\"no\",\"food\":\"veg\"}', 1, '2026-04-10 04:55:57', '2026-04-10 04:55:57'),
+(4, 3, 3, 'R305', 26, 'male', 'Data Analyst', 'Indiranagar, Bangalore', 10000.00, 18000.00, '2026-06-01', 'Working professional, need AC room with WiFi.', '{\"smoking\":\"no\",\"pets\":\"yes\",\"food\":\"nonveg\"}', 1, '2026-04-10 04:55:57', '2026-04-10 04:55:57'),
+(5, 89, 16, 'R410', 28, 'male', 'Marketing Manager', 'Bangalore', 7000.00, 12000.00, '2026-05-20', 'Friendly and clean. Looking for long-term stay.', '{\"smoking\":\"no\",\"pets\":\"no\",\"food\":\"both\"}', 1, '2026-04-10 04:55:57', '2026-04-10 04:55:57');
 
 -- --------------------------------------------------------
 
@@ -688,7 +694,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `name`, `email`, `phone`, `password_hash`, `user_type`, `profile_image`, `is_verified`, `is_active`, `deactivation_reason`, `deactivated_at`, `email_verified`, `phone_verified`, `created_at`, `updated_at`, `last_login`) VALUES
 (2, 'Roshan', 'rsikotariya113@gmail.com', '9313380848', '$2a$10$ms8rsAT070Y.SwJWxbxLOOWmAVQ3VjosRgm6T9I5LMn.z6xpr4Nnq', 'owner', NULL, 1, 1, NULL, NULL, 0, 0, '2026-03-20 03:58:14', '2026-04-09 17:00:32', '2026-04-09 17:00:32'),
-(3, 'Roshan', 'rsikotariya1311@gmail.com', '9586152405', '$2a$10$0QdAPdh/Xr027Or52hmSCOCmLE7iclulILTrn46nYEIfPVTDiWNlS', 'tenant', NULL, 1, 1, NULL, NULL, 0, 0, '2026-03-20 04:15:12', '2026-04-09 17:03:23', '2026-04-09 17:03:23'),
+(3, 'Roshan', 'rsikotariya1311@gmail.com', '9586152405', '$2a$10$0QdAPdh/Xr027Or52hmSCOCmLE7iclulILTrn46nYEIfPVTDiWNlS', 'tenant', NULL, 1, 1, NULL, NULL, 0, 0, '2026-03-20 04:15:12', '2026-04-10 04:51:54', '2026-04-10 04:51:54'),
 (5, 'Admin', 'admin@pgfinder.com', '9999999999', '$2a$12$YsSMxtI4piwS06HoTqghMu91D84yN4dlOxidWCDq.O4kHmy8Iu21S', 'admin', NULL, 1, 1, NULL, NULL, 1, 0, '2026-03-20 04:29:50', '2026-04-09 16:56:03', '2026-04-09 16:56:03'),
 (15, 'Rajesh Kumar', 'rajesh.kumar@gmail.com', '9876543220', 'owner123', 'owner', NULL, 1, 1, NULL, NULL, 0, 0, '2026-03-22 14:53:42', '2026-03-22 14:53:42', NULL),
 (16, 'Priya Sharma', 'priya.sharma@gmail.com', '9876543221', 'owner123', 'owner', NULL, 1, 1, NULL, NULL, 0, 0, '2026-03-22 14:53:42', '2026-03-22 14:53:42', NULL),
@@ -838,7 +844,8 @@ ALTER TABLE `roommate_profiles`
   ADD PRIMARY KEY (`profile_id`),
   ADD KEY `idx_user` (`user_id`),
   ADD KEY `idx_location` (`preferred_location`),
-  ADD KEY `idx_budget` (`budget_min`,`budget_max`);
+  ADD KEY `idx_budget` (`budget_min`,`budget_max`),
+  ADD KEY `fk_roommate_listing` (`pg_listing_id`);
 
 --
 -- Indexes for table `saved_pgs`
@@ -954,7 +961,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT for table `roommate_profiles`
 --
 ALTER TABLE `roommate_profiles`
-  MODIFY `profile_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `profile_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `saved_pgs`
@@ -1073,6 +1080,7 @@ ALTER TABLE `reviews`
 -- Constraints for table `roommate_profiles`
 --
 ALTER TABLE `roommate_profiles`
+  ADD CONSTRAINT `fk_roommate_listing` FOREIGN KEY (`pg_listing_id`) REFERENCES `pg_listings` (`listing_id`) ON DELETE SET NULL,
   ADD CONSTRAINT `roommate_profiles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
